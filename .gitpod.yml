@@ -1,0 +1,7 @@
+tasks:
+  - init: |
+      nvm install 16
+      nvm use 16
+      nvm alias default 16
+      npm install && npm run build
+    command: npm run start
