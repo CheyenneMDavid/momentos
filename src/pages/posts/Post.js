@@ -2,9 +2,10 @@ import React from 'react';
 import styles from '../../styles/Post.module.css';
 import { useCurrentUser } from '../../contexts/CurrentUserContext';
 import { Card, Media, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import Avatar from '../../components/Avatar';
 import { axiosRes } from '../../api/axiosDefaults';
+import { MoreDropdown } from '../../components/MoreDropdown';
 
 const Post = (props) => {
 	const {
@@ -25,6 +26,20 @@ const Post = (props) => {
 
 	const currentUser = useCurrentUser();
 	const is_owner = currentUser?.username === owner;
+	const history = useHistory();
+
+	const handleEdit = () => {
+		history.push(`/posts/${id}/edit`);
+	};
+
+	const handleDelete = async () => {
+		try {
+			await axiosRes.delete(`/posts/${id}/`);
+			history.goBack();
+		} catch (err) {
+			console.log(err);
+		}
+	};
 
 	const handleLike = async () => {
 		try {
@@ -42,35 +57,18 @@ const Post = (props) => {
 		}
 	};
 
-	// handleUnlike, an asynchronous function for handling the "unlike" action
 	const handleUnlike = async () => {
 		try {
-			// Try to execute the following code block
-
-			// Sends a DELETE request to the server to remove a like
-			// The URL includes the like_id, indicating which like is being removed
 			await axiosRes.delete(`/likes/${like_id}/`);
-
-			// Updates the state of posts using setPosts
 			setPosts((prevPosts) => ({
-				// Copies all existing state properties from prevPosts
 				...prevPosts,
-				// Updates the results array within the state
 				results: prevPosts.results.map((post) => {
-					// Iterates over each post in the results
-
-					// Checks if the current post's ID matches the given ID
 					return post.id === id
-						? // If it's a match, update the post's like count and reset like_id
-						  { ...post, likes_count: post.likes_count - 1, like_id: null }
-						: // If it's not a match, return the post as is
-						  post;
+						? { ...post, likes_count: post.likes_count - 1, like_id: null }
+						: post;
 				}),
 			}));
 		} catch (err) {
-			// Catches any errors that occur in the try block
-
-			// Logs the error to the console
 			console.log(err);
 		}
 	};
@@ -85,7 +83,9 @@ const Post = (props) => {
 					</Link>
 					<div className="d-flex align-items-center">
 						<span>{updated_at}</span>
-						{is_owner && postPage && '...'}
+						{is_owner && postPage && (
+							<MoreDropdown handleEdit={handleEdit} handleDelete={handleDelete} />
+						)}
 					</div>
 				</Media>
 			</Card.Body>
