@@ -30,3 +30,31 @@ export const fetchMoreData = async (resource, setResource) => {
 		console.log(err);
 	}
 };
+
+// This followHelper function was initially made in the ProfileDataContext.js, where
+// it was last commited and then moved here in order to make it more accessable and
+// call it on every map function, making it far cleaner. Passing "profile, clickedProfile and
+// following_id" as arguments.
+// As data.id is being passed into the helper function as an argument named "following_id"
+// the value of the same name is being updated by removing "data.id" from
+// "follow_id: data.id" in the return.  The updated value is now "following_id"
+export const followHelper = (profile, clickedProfile, following_id) => {
+	return profile.id === clickedProfile.id
+		? // This is the profile I clicked on,
+		  // update it's followers count and set it's following id.
+		  {
+				...profile,
+				followers_count: profile.followers_count + 1,
+				following_id, // Previously "following_id: data.id"
+		  }
+		: profile.is_owner
+		? // This is the profile of the logged in user
+		  // update it's following count.
+		  {
+				...profile,
+				following_count: profile.following_count + 1,
+		  }
+		: // This is not the profile the user clicked on or the profile
+		  // the user owns, so just just return it unchanged.
+		  profile;
+};
