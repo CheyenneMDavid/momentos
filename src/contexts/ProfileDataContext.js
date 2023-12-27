@@ -25,20 +25,49 @@ export const ProfileDataProvider = ({ children }) => {
 
 			setProfileData((prevState) => ({
 				...prevState,
+				pageProfile: {
+					results: prevState.pageProfile.results.map((profile) => {
+						return profile.id === clickedProfile.id
+							? // This is the profile I clicked on,
+							  // update it's followers count and set it's following id.
+							  {
+									...profile,
+									followers_count: profile.followers_count + 1,
+									following_id: data.id,
+							  }
+							: profile.is_owner
+							? // This is the profile of the logged in user
+							  // update it's following count.
+							  {
+									...profile,
+									following_count: profile.following_count + 1,
+							  }
+							: // This is not the profile the user clicked on or the profile
+							  // the user owns, so just just return it unchanged.
+							  profile;
+					}),
+				},
 				popularProfiles: {
 					...prevState.popularProfiles,
 					results: prevState.popularProfiles.results.map((profile) => {
 						return profile.id === clickedProfile.id
 							? // This is the profile I clicked on,
 							  // update it's followers count and set it's following id.
-							  {}
+							  {
+									...profile,
+									followers_count: profile.followers_count + 1,
+									following_id: data.id,
+							  }
 							: profile.is_owner
 							? // This is the profile of the logged in user
 							  // update it's following count.
-							  {}
+							  {
+									...profile,
+									following_count: profile.following_count + 1,
+							  }
 							: // This is not the profile the user clicked on or the profile
 							  // the user owns, so just just return it unchanged.
-							  {};
+							  profile;
 					}),
 				},
 			}));
