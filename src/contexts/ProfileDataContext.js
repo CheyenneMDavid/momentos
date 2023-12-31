@@ -11,7 +11,6 @@ export const useSetProfileData = () => useContext(SetProfileDataContext);
 
 export const ProfileDataProvider = ({ children }) => {
 	const [profileData, setProfileData] = useState({
-		// we will use the pageProfile later!
 		pageProfile: { results: [] },
 		popularProfiles: { results: [] },
 	});
@@ -43,25 +42,39 @@ export const ProfileDataProvider = ({ children }) => {
 		}
 	};
 
+	// The handleUnfollow async function with clickedProfile as an argument.
 	const handleUnfollow = async (clickedProfile) => {
 		try {
+			// DELETE request made to `/followers/${clickedProfile.following_id}/` with the axiosRes instance.
 			await axiosRes.delete(`/followers/${clickedProfile.following_id}/`);
 
+			// The setProfileData function is called to update the state.
 			setProfileData((prevState) => ({
+				// The spread operator is used to copy all properties of the current state which are carried forward
 				...prevState,
+
+				// pageProfile part of the state is updated with the results from mapping over prevState.pageProfile.results
 				pageProfile: {
+					// Map over the results array in pageProfile
 					results: prevState.pageProfile.results.map((profile) =>
+						// The unfollowHelper that is defined in the utils.js is called for each profile, and updates profiles as needed
 						unfollowHelper(profile, clickedProfile),
 					),
 				},
+
+				// Updates the popularProfiles part of the state in a similare way as in the handleFollow
 				popularProfiles: {
+					// Spread operator to maintain other properties of popularProfiles
 					...prevState.popularProfiles,
+					// Map over the results array in popularProfiles
 					results: prevState.popularProfiles.results.map((profile) =>
+						// Again, call the unfollowHelper for each profile
 						unfollowHelper(profile, clickedProfile),
 					),
 				},
 			}));
 		} catch (err) {
+			// If there is an error during the async operation, log it to the console
 			console.log(err);
 		}
 	};

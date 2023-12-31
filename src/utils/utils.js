@@ -59,20 +59,25 @@ export const followHelper = (profile, clickedProfile, following_id) => {
 		  profile;
 };
 
+// Exporting the unfollowHelper function, which is taking 'profile' and 'clickedProfile' as
+// it's arguments.
+// It is used to update the 'profile' object when a user decides to unfollow another user.
 export const unfollowHelper = (profile, clickedProfile) => {
+	// Checking if the 'profile' and 'clickedProfile' are the same.
 	return profile.id === clickedProfile.id
-		? // This is the profile I clicked on,
-		  // update its followers count and set its following id
-		  {
+		? {
+				// Using the spread operator to carry forward the current value
 				...profile,
+				// The new value of followers_count is a product of the spread operator carrying
+				// forward the value of profile and decreasing it by 1
 				followers_count: profile.followers_count - 1,
+				//  following_id, being the profile of the person clicked. The value is then set to null.
 				following_id: null,
 		  }
-		: profile.is_owner
-		? // This is the profile of the logged in user
-		  // update its following count
-		  { ...profile, following_count: profile.following_count - 1 }
-		: // this is not the profile the user clicked on or the profile
-		  // the user owns, so just return it unchanged
+		: // Taken as a given that the person doing the clicking is the owner, in which case their
+		// following count is decreased by 1
+		profile.is_owner
+		? { ...profile, following_count: profile.following_count - 1 }
+		: // Else the profile if returned unchanged.
 		  profile;
 };
